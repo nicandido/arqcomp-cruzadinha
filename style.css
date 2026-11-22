@@ -60,6 +60,8 @@ main {
   font: 700 calc(var(--cell) * 0.55) system-ui, sans-serif;
   text-transform: uppercase;
   color: #111;
+  caret-color: transparent;
+  caret-color: transparent;
   cursor: pointer;
 }
 .casa input:focus { outline: 2px solid var(--azul); outline-offset: -2px; background: #fff7c2; }
@@ -74,3 +76,5 @@ main {
   pointer-events: none;
   z-index: 1;
 }
+
+.casa.ativa { background: var(--azul-claro); }

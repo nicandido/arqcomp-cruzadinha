@@ -138,6 +138,8 @@ const COLUNAS = 16;
 const gridEl = document.getElementById("grid");
 
 const celulas = {}; // "r,c" -> { input, palavras: [índices] }
+let direcaoAtiva = "H";
+let palavraAtiva = null;
 
 function chave(r, c) { return r + "," + c; }
 
@@ -185,10 +187,92 @@ function montarTabuleiro() {
       input.setAttribute("aria-label", "Linha " + (r + 1) + ", coluna " + (c + 1));
       input.dataset.r = r;
       input.dataset.c = c;
+      input.addEventListener("focus", () => aoFocar(cel));
+      input.addEventListener("click", () => aoClicar(cel));
+      input.addEventListener("input", () => aoDigitar(cel));
+      input.addEventListener("keydown", e => aoTecla(e, cel));
       div.appendChild(input);
       cel.input = input;
       gridEl.appendChild(div);
     }
+  }
+}
+
+function palavraDaCelula(cel) {
+  const candidatas = cel.palavras.filter(i => PALAVRAS[i].dir === direcaoAtiva);
+  if (candidatas.length) return candidatas[0];
+  return cel.palavras[0];
+}
+
+function aoClicar(cel) {
+  // clicar de novo numa casa de cruzamento alterna a direção
+  if (palavraAtiva !== null && cel.palavras.length > 1 && document.activeElement === cel.input && cel._jaFocada) {
+    direcaoAtiva = direcaoAtiva === "H" ? "V" : "H";
+  }
+  cel._jaFocada = true;
+  destacar(cel);
+}
+
+function aoFocar(cel) {
+  const unica = cel.palavras.length === 1;
+  if (unica) direcaoAtiva = PALAVRAS[cel.palavras[0]].dir;
+  destacar(cel);
+  setTimeout(() => { if (document.activeElement === cel.input) cel.input.select(); }, 0);
+}
+
+function destacar(cel) {
+  limparDestaque();
+  palavraAtiva = palavraDaCelula(cel);
+  direcaoAtiva = PALAVRAS[palavraAtiva].dir;
+  posicoes(PALAVRAS[palavraAtiva]).forEach(([r, c]) => {
+    celulas[chave(r, c)].input.parentElement.classList.add("ativa");
+  });
+}
+
+function limparDestaque() {
+  document.querySelectorAll(".casa.ativa").forEach(e => e.classList.remove("ativa"));
+  document.querySelectorAll("li.ativa").forEach(e => e.classList.remove("ativa"));
+}
+
+function aoDigitar(cel) {
+  const v = cel.input.value.toUpperCase().replace(/[^A-Z]/g, "");
+  cel.input.value = v.slice(-1);
+  if (cel.input.value) mover(cel, 1);
+}
+
+function mover(cel, passo) {
+  const p = PALAVRAS[palavraDaCelula(cel)];
+  const pos = posicoes(p);
+  const i = pos.findIndex(([r, c]) => r === cel.r && c === cel.c);
+  const prox = pos[i + passo];
+  if (prox) celulas[chave(prox[0], prox[1])].input.focus();
+}
+
+function vizinha(cel, dr, dc) {
+  let r = cel.r + dr, c = cel.c + dc;
+  while (r >= 0 && r < LINHAS && c >= 0 && c < COLUNAS) {
+    const v = celulas[chave(r, c)];
+    if (v) return v;
+    r += dr; c += dc;
+  }
+  return null;
+}
+
+function aoTecla(e, cel) {
+  const setas = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] };
+  if (setas[e.key]) {
+    e.preventDefault();
+    const [dr, dc] = setas[e.key];
+    direcaoAtiva = dr === 0 ? "H" : "V";
+    const v = vizinha(cel, dr, dc);
+    if (v) v.input.focus();
+  } else if (e.key === "Backspace" && !cel.input.value) {
+    e.preventDefault();
+    mover(cel, -1);
+  } else if (e.key === " ") {
+    e.preventDefault();
+    direcaoAtiva = direcaoAtiva === "H" ? "V" : "H";
+    destacar(cel);
   }
 }
 
