@@ -33,6 +33,9 @@ main {
   align-items: flex-start;
 }
 
+.tabuleiro { flex: 0 0 auto; max-width: 100%; }
+.pistas { flex: 1 1 320px; min-width: 280px; }
+
 .grid {
   display: grid;
   grid-template-columns: repeat(var(--colunas, 16), var(--cell));
@@ -61,7 +64,6 @@ main {
   text-transform: uppercase;
   color: #111;
   caret-color: transparent;
-  caret-color: transparent;
   cursor: pointer;
 }
 .casa input:focus { outline: 2px solid var(--azul); outline-offset: -2px; background: #fff7c2; }
@@ -78,3 +80,23 @@ main {
 }
 
 .casa.ativa { background: var(--azul-claro); }
+
+.pistas h2 {
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--azul);
+  color: var(--azul);
+}
+.pistas ol { list-style: none; margin: 0 0 20px; padding: 0; }
+.pistas li {
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+.pistas li:hover { background: #e9eef6; }
+.pistas li .n { font-weight: 700; color: var(--azul); }
+.pistas li.ativa { background: var(--azul-claro); border-left-color: var(--azul); }
+.pistas li.certa { border-left-color: var(--verde-escuro); }
+.pistas li.errada { border-left-color: var(--vermelho-escuro); }

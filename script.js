@@ -136,6 +136,8 @@ const LINHAS = 14;
 const COLUNAS = 16;
 
 const gridEl = document.getElementById("grid");
+const listaH = document.getElementById("pistas-h");
+const listaV = document.getElementById("pistas-v");
 
 const celulas = {}; // "r,c" -> { input, palavras: [índices] }
 let direcaoAtiva = "H";
@@ -198,6 +200,21 @@ function montarTabuleiro() {
   }
 }
 
+function montarPistas() {
+  PALAVRAS.forEach((p, idx) => {
+    const li = document.createElement("li");
+    li.id = "pista-" + idx;
+    li.innerHTML = '<span class="n">' + p.num + '.</span> <span class="t"></span> <span class="status"></span>';
+    li.querySelector(".t").textContent = p.clue + " (" + p.answer.length + " letras)";
+    li.addEventListener("click", () => {
+      direcaoAtiva = p.dir;
+      const [r, c] = posicoes(p).find(([r, c]) => !celulas[chave(r, c)].input.value) || [p.row, p.col];
+      celulas[chave(r, c)].input.focus();
+    });
+    (p.dir === "H" ? listaH : listaV).appendChild(li);
+  });
+}
+
 function palavraDaCelula(cel) {
   const candidatas = cel.palavras.filter(i => PALAVRAS[i].dir === direcaoAtiva);
   if (candidatas.length) return candidatas[0];
@@ -227,6 +244,7 @@ function destacar(cel) {
   posicoes(PALAVRAS[palavraAtiva]).forEach(([r, c]) => {
     celulas[chave(r, c)].input.parentElement.classList.add("ativa");
   });
+  document.getElementById("pista-" + palavraAtiva).classList.add("ativa");
 }
 
 function limparDestaque() {
@@ -277,3 +295,4 @@ function aoTecla(e, cel) {
 }
 
 montarTabuleiro();
+montarPistas();
