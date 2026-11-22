@@ -138,6 +138,8 @@ const COLUNAS = 16;
 const gridEl = document.getElementById("grid");
 const listaH = document.getElementById("pistas-h");
 const listaV = document.getElementById("pistas-v");
+const contadorEl = document.getElementById("contador");
+const mensagemEl = document.getElementById("mensagem");
 
 const celulas = {}; // "r,c" -> { input, palavras: [índices] }
 let direcaoAtiva = "H";
@@ -255,6 +257,7 @@ function limparDestaque() {
 function aoDigitar(cel) {
   const v = cel.input.value.toUpperCase().replace(/[^A-Z]/g, "");
   cel.input.value = v.slice(-1);
+  limparMarcas();
   if (cel.input.value) mover(cel, 1);
 }
 
@@ -294,5 +297,69 @@ function aoTecla(e, cel) {
   }
 }
 
+function textoDaPalavra(p) {
+  return posicoes(p).map(([r, c]) => celulas[chave(r, c)].input.value || "").join("");
+}
+
+function limparMarcas() {
+  document.querySelectorAll(".casa.certa, .casa.errada").forEach(e => e.classList.remove("certa", "errada"));
+  document.querySelectorAll("li .status").forEach(e => { e.textContent = ""; e.className = "status"; });
+  document.querySelectorAll("li.certa, li.errada").forEach(e => e.classList.remove("certa", "errada"));
+  contadorEl.textContent = "Clique em Conferir para ver seus acertos.";
+  mensagemEl.textContent = "";
+}
+
+function conferir() {
+  limparMarcas();
+  let acertos = 0;
+  const resultados = PALAVRAS.map(p => textoDaPalavra(p) === p.answer);
+
+  // casas de palavras certas ficam verdes; as demais, preenchidas, ficam vermelhas
+  PALAVRAS.forEach((p, idx) => {
+    if (!resultados[idx]) {
+      posicoes(p).forEach(([r, c]) => {
+        const cel = celulas[chave(r, c)];
+        if (cel.input.value && !cel.palavras.some(i => resultados[i])) {
+          cel.input.parentElement.classList.add("errada");
+        }
+      });
+    }
+  });
+  PALAVRAS.forEach((p, idx) => {
+    const li = document.getElementById("pista-" + idx);
+    const st = li.querySelector(".status");
+    if (resultados[idx]) {
+      acertos++;
+      li.classList.add("certa");
+      st.textContent = "✓ certa";
+      st.classList.add("ok");
+      posicoes(p).forEach(([r, c]) => celulas[chave(r, c)].input.parentElement.classList.add("certa"));
+    } else {
+      const vazia = textoDaPalavra(p).length < p.answer.length;
+      li.classList.add("errada");
+      st.textContent = vazia ? "✗ incompleta" : "✗ errada";
+      st.classList.add("erro");
+    }
+  });
+  contadorEl.textContent = acertos + " de " + PALAVRAS.length + " palavras";
+  mensagemEl.textContent = acertos === PALAVRAS.length
+    ? "Parabéns! Você completou a cruzadinha!"
+    : "Revise as palavras marcadas com ✗ e confira de novo.";
+}
+
+function reiniciar() {
+  Object.values(celulas).forEach(c => { c.input.value = ""; c._jaFocada = false; });
+  limparMarcas();
+  limparDestaque();
+  palavraAtiva = null;
+  direcaoAtiva = "H";
+  const primeira = PALAVRAS[0];
+  celulas[chave(primeira.row, primeira.col)].input.focus();
+}
+
+document.getElementById("btn-conferir").addEventListener("click", conferir);
+document.getElementById("btn-reiniciar").addEventListener("click", reiniciar);
+
 montarTabuleiro();
 montarPistas();
+limparMarcas();
