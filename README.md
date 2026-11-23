@@ -2,7 +2,7 @@
 
 Jogo de palavras cruzadas que roda no navegador, feito em HTML, CSS e JavaScript puros, para treinar os termos da aula de Tópicos de Arquitetura Computacional (Atividade Avaliativa III · Sprint 3).
 
-**Jogue aqui:** https://SEU-USUARIO.github.io/arqcomp-cruzadinha/
+**Jogue aqui:** https://nicandido.github.io/arqcomp-cruzadinha/
 
 ## Como jogar
 
