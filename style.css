@@ -80,6 +80,27 @@ main {
 }
 
 .casa.ativa { background: var(--azul-claro); }
+.casa.certa { background: var(--verde); }
+.casa.errada { background: var(--vermelho); }
+
+.controles { display: flex; gap: 10px; margin-top: 16px; }
+
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--azul);
+  color: #fff;
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.1); }
+button:focus-visible { outline: 3px solid #f2b705; outline-offset: 2px; }
+button.secundario { background: #fff; color: var(--azul); border: 2px solid var(--azul); }
+
+.contador { font-size: 1.15rem; font-weight: 700; margin: 14px 0 2px; }
+.mensagem { margin: 0; min-height: 1.4em; color: #444; }
 
 .pistas h2 {
   font-size: 1.1rem;
@@ -101,25 +122,11 @@ main {
 .pistas li.certa { border-left-color: var(--verde-escuro); }
 .pistas li.errada { border-left-color: var(--vermelho-escuro); }
 
-.controles { display: flex; gap: 10px; margin-top: 16px; }
-
-button {
-  font: inherit;
-  font-weight: 600;
-  padding: 10px 22px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--azul);
-  color: #fff;
-  cursor: pointer;
-}
-button:hover { filter: brightness(1.1); }
-button:focus-visible { outline: 3px solid #f2b705; outline-offset: 2px; }
-button.secundario { background: #fff; color: var(--azul); border: 2px solid var(--azul); }
-
-.contador { font-size: 1.15rem; font-weight: 700; margin: 14px 0 2px; }
-.mensagem { margin: 0; min-height: 1.4em; color: #444; }
-
 .status { font-weight: 700; white-space: nowrap; }
 .status.ok { color: var(--verde-escuro); }
 .status.erro { color: var(--vermelho-escuro); }
+
+@media (max-width: 700px) {
+  h1 { font-size: 1.3rem; }
+  .pistas { flex-basis: 100%; }
+}
